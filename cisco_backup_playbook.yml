@@ -1,0 +1,16 @@
+---
+- name: Generar Respaldo de Configuracion del Router via Ansible
+  hosts: routers
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+    - name: Ejecutar el comando show running-config
+      ios_command:
+        commands: show running-config
+      register: config_actual
+
+    - name: Guardar los datos en un archivo de texto local
+      copy:
+        content: "{{ config_actual.stdout[0] }}"
+        dest: "./respaldo_csr1000v.txt"

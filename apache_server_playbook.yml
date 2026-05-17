@@ -1,0 +1,24 @@
+---
+- name: Instalacion y configuracion de Servidor Apache
+  hosts: linux
+  become: yes  # Requiere privilegios sudo para instalar paquetes
+
+  tasks:
+    - name: Instalar el servidor web Apache2
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Configurar Apache para escuchar en el puerto 9999
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: '^Listen '
+        line: 'Listen 9999'
+      register: apache_puerto
+
+    - name: Reiniciar servicio Apache para aplicar cambios
+      service:
+        name: apache2
+        state: restarted
+      when: apache_puerto.changed
